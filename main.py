@@ -26,13 +26,11 @@ m.subheader('Expenses')
 r.subheader('Calculation')
 
 percentage_of_revenue = l.number_input('Percentage of Revenue for B2B (%)', min_value=0.0, value=26.8, help='Quickbooks, P&L (Percent of Income)')
-number_of_b2b_bikes = l.number_input('Number of B2B Bikes (#)', min_value=0.0, value=4762.0, help='Partner Program Register > BIKE, # OF BIKES')
-number_of_b2b_garts = l.number_input('Number of B2B Garts (#)', min_value=0.0, value=139.0, help='Partner Program Register > GART, # OF GARTS')
-number_of_units_per_property = l.number_input('Average Number of Units Per Property (#)', min_value=0.0, value=4.340929809, help='=AVERAGE(PPR > BIKE, # OF BIKES)')
-percentage_of_employee_benefits = l.number_input('Percentage of Revenue to Employee Benefits (%)', min_value=0.0, value=15.0, help='Percentage of Cost of Labor')
+percentage_of_employee_benefits = l.number_input('Percentage of Labor to Employee Benefits (%)', min_value=0.0, value=15.0, help='Percentage of Cost of Labor')
 interest_rate_of_unit = l.number_input('Financing Interest Rate on Unit (%)', min_value=0.0, value=18.0, help='')
 number_of_years_to_payoff = l.number_input('Number of Years to Pay Off Unit (#)', min_value=0.0, value=3.0, help='')
-percentage_of_margin = l.number_input('Percentage of Margin (#)', min_value=0.0, value=20.0, help='')
+percentage_of_profit_margin = l.number_input('Percentage of Profit Margin (%)', min_value=0.0, value=20.0, help='')
+number_of_units_per_property = l.number_input('Average Number of Units Per Property (#)', min_value=0.0, value=4.340929809, help='=AVERAGE(PPR > BIKE, # OF BIKES)')
 
 cost_of_labor = m.number_input('Cost of Labor for B2B ($)', min_value=0.0, value=313201.0, help='Labor Report, from Stephen & Andre')
 cost_of_auto_insurance = m.number_input('Cost of Auto Insurance ($)', min_value=0.0, value=75000.0, help='Quickbooks, P&L (Insurance Expense, Auto)')
@@ -43,7 +41,6 @@ cost_of_software_per_month = m.number_input('Cost of Software Per Month ($)', mi
 cost_of_unit = m.number_input('Cost per Unit ($)', min_value=0.0, value=400.0, help='')
 cost_of_unit_initialization = m.number_input('Cost per Unit Initialization ($)', min_value=0.0, value=80.0, help='Build + Lock + Lock Bracket')
 
-number_of_b2b_units = r.number_input('Number of B2B Units (#)', value=(number_of_b2b_bikes + number_of_b2b_garts), help='b2b_bikes + b2b_garts', disabled=True)
 cost_to_repair = r.number_input('Annual Cost of Maintenance Per Unit ($)', min_value=0.0, value=5.22, help='360 Blue Part Cost Per Property / Number of Average House Bikes Per Property', disabled=True)
 cost_of_unit_per_year = r.number_input('Annual Cost of Unit ($)', value=(((cost_of_unit * (1 + interest_rate_of_unit / 100)) + cost_of_unit_initialization)/ number_of_years_to_payoff), help='(cost_of_unit * (1 + interest_rate_of_unit / 100)) + cost_of_unit_initialization) / number_of_years_to_payoff', disabled=True)
 
@@ -85,9 +82,9 @@ if checks_file is not None:
     number_of_b2b_stops = l.number_input('Number of Stops (#)', min_value=0.0, value=float(pivot_master.sum()), help='integraRental') # TODO
     cost_per_stop = r.number_input('Cost Per Stop ($)', min_value=0.0, value=annual_b2b_expenses / number_of_b2b_stops, help='What is the cost associated to each time we do a stop?', disabled=True)
 
-    min_stops_at_a_property = pivot.min()
-    average_stops_per_property = pivot.mean()
-    max_stops_at_a_property = pivot.max()
+    minimum_stops_at_a_property = pivot.min()
+    average_stops_per_property  = pivot.mean()
+    maximum_stops_at_a_property = pivot.max()
 
     with st.expander('**Math**'):
         l, m, r = st.columns(3)
@@ -98,25 +95,25 @@ if checks_file is not None:
         with st.container(border=True):
             st.write('**Counts**')
             l, m, r = st.columns(3)
-            l.metric('Minimum Stops at a Property', round(min_stops_at_a_property))
+            l.metric('Minimum Stops at a Property', round(minimum_stops_at_a_property))
             m.metric('Average Stops Per Property', round(average_stops_per_property))
-            r.metric('Max Stops at a Property', round(max_stops_at_a_property))
+            r.metric('Max Stops at a Property', round(maximum_stops_at_a_property))
 
 
         with st.container(border=True):
             st.write('**Per Property**')
             l, m, r = st.columns(3)
-            l.metric('Cost of Minimum Stops at a Property', round(min_stops_at_a_property * cost_per_stop, 2))
+            l.metric('Cost of Minimum Stops at a Property', round(minimum_stops_at_a_property * cost_per_stop, 2))
             m.metric('Cost of Average Stops Per Property', round(average_stops_per_property * cost_per_stop, 2))
-            r.metric('Cost of Max Stops at a Property', round(max_stops_at_a_property * cost_per_stop, 2))
+            r.metric('Cost of Max Stops at a Property', round(maximum_stops_at_a_property * cost_per_stop, 2))
 
 
         with st.container(border=True):
             st.write('**Per Average Units**')
             l, m, r = st.columns(3)
-            l.metric('Cost of Minimum Stops at a Property Per Unit', round(min_stops_at_a_property * cost_per_stop / number_of_units_per_property, 2))
+            l.metric('Cost of Minimum Stops at a Property Per Unit', round(minimum_stops_at_a_property * cost_per_stop / number_of_units_per_property, 2))
             m.metric('Cost of Average Stops Per Property Per Unit', round(average_stops_per_property * cost_per_stop / number_of_units_per_property, 2))
-            r.metric('Cost of Max Stops at a Property Per Unit', round(max_stops_at_a_property * cost_per_stop / number_of_units_per_property, 2))
+            r.metric('Cost of Max Stops at a Property Per Unit', round(maximum_stops_at_a_property * cost_per_stop / number_of_units_per_property, 2))
 
             l.metric('Annual Cost of Unit', round(cost_of_unit_per_year, 2))
             m.metric('Annual Cost of Unit', round(cost_of_unit_per_year, 2))
@@ -129,16 +126,28 @@ if checks_file is not None:
 
     with st.container(border=True):
         st.write('**Cost Per Unit on House Program**')
+        include_profit_margin = st.toggle('Include profit margin?', value=False)
+
+        cost_per_unit_minimum_stops = minimum_stops_at_a_property * cost_per_stop / number_of_units_per_property + cost_of_unit_per_year + cost_to_repair
+        cost_per_unit_average_stops = average_stops_per_property  * cost_per_stop / number_of_units_per_property + cost_of_unit_per_year + cost_to_repair
+        cost_per_unit_maximum_stops = maximum_stops_at_a_property * cost_per_stop / number_of_units_per_property + cost_of_unit_per_year + cost_to_repair
+
+        if include_profit_margin:
+            cost_per_unit_minimum_stops = cost_per_unit_minimum_stops / (1 - (percentage_of_profit_margin / 100))
+            cost_per_unit_average_stops = cost_per_unit_average_stops / (1 - (percentage_of_profit_margin / 100))
+            cost_per_unit_maximum_stops = cost_per_unit_maximum_stops / (1 - (percentage_of_profit_margin / 100))
+
+        st.write('**Per Year**')
         l, m, r = st.columns(3)
-        l.metric('Based on Minimum Stops', round(min_stops_at_a_property * cost_per_stop / number_of_units_per_property + cost_of_unit_per_year + cost_to_repair, 2))
-        m.metric('Based on Average Stops', round(average_stops_per_property * cost_per_stop / number_of_units_per_property + cost_of_unit_per_year + cost_to_repair, 2))
-        r.metric('Based on Maximum Stops', round(max_stops_at_a_property * cost_per_stop / number_of_units_per_property + cost_of_unit_per_year + cost_to_repair, 2))
+        l.metric('Based on Minimum Stops', round(cost_per_unit_minimum_stops,2))
+        m.metric('Based on Average Stops', round(cost_per_unit_average_stops,2))
+        r.metric('Based on Maximum Stops', round(cost_per_unit_maximum_stops,2))
 
         st.write('**Per Month**')
         l, m, r = st.columns(3)
-        l.metric('Based on Minimum Stops', round((min_stops_at_a_property * cost_per_stop / number_of_units_per_property + cost_of_unit_per_year + cost_to_repair) / 12, 2))
-        m.metric('Based on Average Stops', round((average_stops_per_property * cost_per_stop / number_of_units_per_property + cost_of_unit_per_year + cost_to_repair) / 12, 2))
-        r.metric('Based on Maximum Stops', round((max_stops_at_a_property * cost_per_stop / number_of_units_per_property + cost_of_unit_per_year + cost_to_repair) / 12, 2))
+        l.metric('Based on Minimum Stops', round(cost_per_unit_minimum_stops / 12, 2))
+        m.metric('Based on Average Stops', round(cost_per_unit_average_stops / 12, 2))
+        r.metric('Based on Maximum Stops', round(cost_per_unit_maximum_stops / 12, 2))
 
     st.divider()
 
