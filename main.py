@@ -69,6 +69,13 @@ if checks_file is not None:
     activites_with_a_bike_check = df[df.Order.isin(bike_check_order_numbers)]
     activites_without_gart = activites_with_a_bike_check[~activites_with_a_bike_check.Activity.str.contains('GART')]
 
+    # temp = df[~df.Order.isin(bike_check_order_numbers)]
+    # temp = temp[temp.Activity == 'DELIVERY']
+    # temp
+    # orders = temp.Order.unique()
+    # st.write(len(temp))
+    # st.write(len(orders))
+
     customers = activites_without_gart.Customer.unique()
 
     with st.expander('**Channel Partners**'):
